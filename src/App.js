@@ -1,23 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import "antd/dist/antd.css";
+import SearchWeather from "./components/Search";
+import InfoWeather from "./components/InfoWeather";
+import { api } from "./services/api";
+import { helper } from "./helpers/common";
 
 function App() {
+  const [loading, setLoading] = useState(false);
+  const [weather, setWeather] = useState({});
+
+  const SearchWeatherByCity = async (city = "") => {
+    console.log(city);
+    if (city !== "") {
+      // phai nhap gia tri
+      setLoading(true);
+      const data = await api.getDataWeather(city);
+      console.log(data);
+      if (!helper.isEmptyObject(data)) {
+        setWeather(data);
+      }
+      setLoading(false);
+    }
+  };
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <SearchWeather loading={loading} search={SearchWeatherByCity} />
+      {!helper.isEmptyObject(weather) && <InfoWeather dataWeather={weather} />}
     </div>
   );
 }
